@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
 from read_data import *
 
 x,y = readData('water_final.arff')
-# The code below is deprecated in Pytorch 0.4. Now, autograd directly supports tensors
-# x, y = Variable(x), Variable(y)
-
-# plt.scatter(x.data.numpy()[:, 0], x.data.numpy()[:, 1], c=y.data.numpy(), s=100, lw=0, cmap='RdYlGn')
-# plt.show()
 
 
 class Net(torch.nn.Module):
@@ -26,25 +21,22 @@ class Net(torch.nn.Module):
         x = F.log_softmax(self.out(x),dim=1)
         return x
 
-net = Net()     # define the network
-print(net)  # net architecture
+net = Net()
 
 optimizer = torch.optim.Adam(net.parameters(), lr=0.02)
-loss_func = torch.nn.NLLLoss()  # the target label is NOT an one-hotted
+loss_func = torch.nn.NLLLoss()
 
-plt.ion()   # something about plotting
+plt.ion()
 
 for t in range(100):
     out = net(x)
-    print(out)# input x and predict based on x
-    loss = loss_func(out, y)     # must be (1. nn output, 2. target), the target label is NOT one-hotted
+    loss = loss_func(out, y)
 
-    optimizer.zero_grad()   # clear gradients for next train
-    loss.backward()         # backpropagation, compute gradients
-    optimizer.step()        # apply gradients
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
     if t % 2 == 0:
-        # plot and show learning process
         plt.cla()
         prediction = torch.max(out, 1)[1]
         pred_y = prediction.data.numpy()
